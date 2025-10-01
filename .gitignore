@@ -1,0 +1,6 @@
+target/
+pom.xml.versionsBackup
+todo.md
+.settings
+.classpath
+.project
