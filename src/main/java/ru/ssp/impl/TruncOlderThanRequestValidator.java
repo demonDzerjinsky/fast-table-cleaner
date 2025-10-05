@@ -12,6 +12,7 @@ import ru.ssp.dto.TruncOlderThanResponse;
  */
 class TruncOlderThanRequestValidator
         implements Validator<TruncOlderThanRequest, TruncOlderThanResponse> {
+
     /**
      * сообщение в сл ошибки валидации.
      */
@@ -24,8 +25,11 @@ class TruncOlderThanRequestValidator
                 .map(p -> new TruncOlderThanResponse(FAIL, CONTR_VALID_ERR));
     }
 
-    private boolean checkIfErr(
-            final TruncOlderThanRequest req) {
-        return true; // todo
+    private boolean checkIfErr(final TruncOlderThanRequest req) {
+        return req.tableName() == null
+                || req.tableCol() == null
+                || req.dateFrom() == null
+                || req.tableName().isBlank()
+                || req.tableCol().isBlank();
     }
 }
