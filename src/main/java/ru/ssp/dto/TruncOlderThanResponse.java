@@ -6,7 +6,7 @@ package ru.ssp.dto;
  * @param status  статус выполнения
  * @param message сообщение в сл ошибки
  */
-public record TruncateOlderThanResponseDto(Status status, String message) {
+public record TruncOlderThanResponse(Status status, String message) {
     public enum Status {
         /**
          * успешное завершение.

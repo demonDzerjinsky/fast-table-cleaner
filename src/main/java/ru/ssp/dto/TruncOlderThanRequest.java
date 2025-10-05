@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  * @param tableCol  наименование колонки
  * @param dateFrom  параметр начиная с какой даты будет очистка данных
  */
-public record TruncateOlderThanRequestDto(
+public record TruncOlderThanRequest(
         String tableName,
         String tableCol,
         LocalDateTime dateFrom) {

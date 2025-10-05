@@ -1,7 +1,9 @@
 package ru.ssp.api;
 
-import ru.ssp.dto.TruncateOlderThanRequestDto;
-import ru.ssp.dto.TruncateOlderThanResponseDto;
+import static ru.ssp.impl.FastCleaner.truncate;
+
+import ru.ssp.dto.TruncOlderThanRequest;
+import ru.ssp.dto.TruncOlderThanResponse;
 
 /**
  * входная точка вызова API операций с таблицами.
@@ -18,9 +20,8 @@ public final class TableFastOperationsApi {
      * @param request контракт вызова
      * @return контракт ответа
      */
-    public static TruncateOlderThanResponseDto truncateOlderThan(
-            final TruncateOlderThanRequestDto request) {
-        // TODO
-        return null;
+    public static TruncOlderThanResponse truncateOlderThan(
+            final TruncOlderThanRequest request) {
+        return truncate(request);
     }
 }
