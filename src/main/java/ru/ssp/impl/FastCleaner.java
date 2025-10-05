@@ -1,5 +1,8 @@
 package ru.ssp.impl;
 
+import static ru.ssp.dto.TruncOlderThanResponse.Status.FAIL;
+import static ru.ssp.dto.TruncOlderThanResponse.Status.OK;
+
 import ru.ssp.dto.TruncOlderThanRequest;
 import ru.ssp.dto.TruncOlderThanResponse;
 
@@ -16,13 +19,13 @@ public final class FastCleaner {
     /**
      * выполняет задачу очистки.
      */
-    private final TruncOlderThanExecr truncateExecutor;
+    private final TruncOlderThanExecr te;
 
     private FastCleaner(
             final Validator<TruncOlderThanRequest, TruncOlderThanResponse> v,
             final TruncOlderThanExecr ex) {
         this.vl = v;
-        this.truncateExecutor = ex;
+        this.te = ex;
     }
 
     /**
@@ -50,11 +53,21 @@ public final class FastCleaner {
      * мапинг входного контракта, вызов требуемых компонент,
      * обратный мапинг в контракт ответа.
      *
-     * @param request запрос в контракте
+     * @param rq запрос в контракте
      * @return ответ по результату выполнения в контракте
      */
     private TruncOlderThanResponse doTruncate(
-            final TruncOlderThanRequest request) {
-        return null; // todo
+            final TruncOlderThanRequest rq) {
+        return vl.validate(rq)
+                .orElseGet(() -> {
+                    try {
+                        te.truncateRecords(rq.tableName(),
+                                rq.tableCol(),
+                                rq.dateFrom());
+                        return new TruncOlderThanResponse(OK, null);
+                    } catch (Exception e) {
+                        return new TruncOlderThanResponse(FAIL, e.getMessage());
+                    }
+                });
     }
 }
