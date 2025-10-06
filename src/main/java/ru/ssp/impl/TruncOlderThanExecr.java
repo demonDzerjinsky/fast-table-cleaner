@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 /**
  * интерфейс очистки старых строк.
  */
-interface TruncOlderThanExecr {
+public interface TruncOlderThanExecr {
 
     /**
      * метод очистки старых строк.
