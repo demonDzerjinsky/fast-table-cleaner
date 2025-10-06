@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+import ru.ssp.exceptions.CustomConcurrencyException;
+import ru.ssp.jdbc.JdbcTruncOlderThanImpl;
+
 /**
  * обеспечивает конкурентную работу.
  * и фабричный метод создания нужной имплементации
@@ -12,6 +15,13 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 class ConcurrentTruncOlderThanExecr
         implements TruncOlderThanExecr, JdbcTruncOlderThanCreateAware {
+
+    /**
+     * сообщение при формировании исключения.
+     */
+    private static final String ANOTHER_THREAD_BLOCKS_TABLE =
+
+            "another thread blocks table";
 
     /**
      * блокировки совместного доступа на таблицы.
@@ -25,13 +35,22 @@ class ConcurrentTruncOlderThanExecr
             final String tableName,
             final String colName,
             final LocalDateTime dateFrom) {
-
+        final var lock = LOCKS
+                .computeIfAbsent(tableName, k -> new ReentrantLock());
+        if (lock.tryLock()) {
+            try {
+                this.create().truncateRecords(tableName, colName, dateFrom);
+            } finally {
+                lock.unlock();
+            }
+        } else {
+            throw new CustomConcurrencyException(ANOTHER_THREAD_BLOCKS_TABLE);
+        }
     }
 
     @Override
     public TruncOlderThanExecr create() {
-        // TODO Auto-generated method stub
-        return null;
+        return new JdbcTruncOlderThanImpl();
     }
 
 }
