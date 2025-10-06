@@ -8,7 +8,7 @@ import java.util.Optional;
  * @param <T> тип входного контракта
  * @param <R> возвращаемый тип в сл не прохождения валидации
  */
-public interface Validator<T, R> {
+interface Validator<T, R> {
 
     /**
      * обобщенный метод валидации.

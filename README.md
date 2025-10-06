@@ -15,4 +15,4 @@ mvn javadoc:javadoc
 ${project_dir}/target/reports/apidocs/index.html
 ```
 ### подходы в проекте
-
+- конкурентный доступ к операции удаления данных в таблице с определенным наименованием организован через потокобезопасную реализацию - ConcurrentHashMap

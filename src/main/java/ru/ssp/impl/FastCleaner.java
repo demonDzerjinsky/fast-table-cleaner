@@ -54,7 +54,9 @@ public final class FastCleaner {
      * @return экземпляр правильно собранного класса
      */
     private static FastCleaner createInstance() {
-        return null; // todo
+        final var validator = new TruncOlderThanRequestValidator();
+        final var exctr = new ConcurrentTruncOlderThanExecr();
+        return new FastCleaner(validator, exctr);
     }
 
     /**
