@@ -1,11 +1,11 @@
 package ru.ssp.api;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static ru.ssp.infra.CustomProperties.getPty;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -23,8 +23,8 @@ public class ApiIntegrationTest {
     @Container
     private static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15.3")
             .withDatabaseName("testdb")
-            .withUsername("user")
-            .withPassword("pass");
+            .withUsername(login)
+            .withPassword(pass);
 
     @Test
     void checkConfigUserAndPassIsNotNull() {
@@ -35,12 +35,12 @@ public class ApiIntegrationTest {
     @Test
     void checkContainer() {
         var url = postgres.getJdbcUrl();
-        var user = postgres.getUsername();
-        var pass = postgres.getPassword();
+        var actualUser = postgres.getUsername();
+        var actualPass = postgres.getPassword();
         log.info("container url = {}", url);
-        Assertions.assertAll(
-                () -> assertEquals("user", user),
-                () -> assertEquals("pass", pass),
+        assertAll(
+                () -> assertEquals(login, actualUser),
+                () -> assertEquals(pass, actualPass),
                 () -> assertNotNull(url));
     }
 
