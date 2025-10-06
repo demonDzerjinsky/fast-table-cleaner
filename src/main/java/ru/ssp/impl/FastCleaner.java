@@ -3,13 +3,22 @@ package ru.ssp.impl;
 import static ru.ssp.dto.TruncOlderThanResponse.Status.FAIL;
 import static ru.ssp.dto.TruncOlderThanResponse.Status.OK;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.ssp.dto.TruncOlderThanRequest;
 import ru.ssp.dto.TruncOlderThanResponse;
 
 /**
  * реализует API очистки старых строк в соответствии с контрактом.
  */
+@Slf4j
 public final class FastCleaner {
+
+    /**
+     * сообщение в лог.
+     */
+    private static final String STATUS_FAIL_MESSAGE =
+
+            "Status = FAIL, message = {}";
 
     /**
      * валидатор входного контракта.
@@ -66,6 +75,7 @@ public final class FastCleaner {
                                 rq.dateFrom());
                         return new TruncOlderThanResponse(OK, null);
                     } catch (Exception e) {
+                        log.error(STATUS_FAIL_MESSAGE, e);
                         return new TruncOlderThanResponse(FAIL, e.getMessage());
                     }
                 });
