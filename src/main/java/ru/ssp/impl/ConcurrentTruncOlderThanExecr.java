@@ -19,7 +19,7 @@ class ConcurrentTruncOlderThanExecr
     /**
      * сообщение при формировании исключения.
      */
-    private static final String ANOTHER_THREAD_BLOCKS_TABLE =
+    private static final String ANOTHER_THREAD_BLOCKING_TABLE =
 
             "another thread blocks table";
 
@@ -44,7 +44,7 @@ class ConcurrentTruncOlderThanExecr
                 lock.unlock();
             }
         } else {
-            throw new CustomConcurrencyException(ANOTHER_THREAD_BLOCKS_TABLE);
+            throw new CustomConcurrencyException(ANOTHER_THREAD_BLOCKING_TABLE);
         }
     }
 
