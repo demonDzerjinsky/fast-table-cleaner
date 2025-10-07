@@ -95,7 +95,7 @@ public class ApiIntegrationTest {
 
     private void createTableAsSelect(String table, String tableSrc, String col, LocalDateTime dateTime) {
         final String template = "create table %s as select * from %s where %s < ?";
-        final String queryString = String.format(template, table, tableSrc, col, dateTime);
+        final String queryString = String.format(template, table, tableSrc, col);
         try (var connection = dataSource.getConnection(); var stmt = connection.prepareStatement(queryString)) {
             stmt.setTimestamp(1, Timestamp.valueOf(dateTime));
             stmt.executeUpdate();

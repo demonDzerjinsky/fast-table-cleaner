@@ -3,6 +3,7 @@ package ru.ssp.jdbc;
 import static java.lang.String.format;
 import static ru.ssp.infra.CustomConnectionPool.getConnection;
 
+import java.sql.Timestamp;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
@@ -90,7 +91,16 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
             final String srcTable,
             final String colName,
             final LocalDateTime dt) {
-
+        // sql injection не боимся, все таблицы проверены на метаданных ранее
+        final String tpl = "CREATE TABLE %s AS SELECT * FROM %s WHERE %s < ?";
+        final String query = format(tpl, createTable, srcTable, colName);
+        try (var connection = getConnection();
+                var stmt = connection.prepareStatement(query)) {
+            stmt.setTimestamp(1, Timestamp.valueOf(dt));
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new CustomSQLException(e);
+        }
     }
 
     /**
