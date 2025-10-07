@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.ssp.exceptions.CustomSQLException;
+import ru.ssp.exceptions.InvalidTabOrColException;
 import ru.ssp.impl.TruncOlderThanExecr;
 import ru.ssp.infra.CustomConnectionPool;
 
@@ -19,6 +20,18 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
      * сообщение ошибки.
      */
     private static final String SQL_ERR_MSG = "sql error: %s";
+
+    /**
+     * сообщение ошибки в переданных параметрах
+     * таблицы или колонки таблицы.
+     */
+    private static final String NOT_FOUND_MSG = "tab or col not found";
+
+    /**
+     * сообщение ошибки в переданных параметрах
+     * в сл если передана колонка не формата timestamp.
+     */
+    private static final String INVALID_COL_TYPE = "col not timestamp format";
 
     @Override
     public void truncateRecords(
@@ -45,9 +58,27 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
      */
     private void checkColFomat(
             final String tableName,
-            final String colName)
-            throws SQLException {
-
+            final String colName) {
+        try (var connection = CustomConnectionPool.getConnection()) {
+            var meta = connection.getMetaData();
+            var colsrs = meta.getColumns(connection.getCatalog(),
+                    connection.getSchema(),
+                    tableName, colName);
+            if (colsrs.next()) {
+                var actualColTypeName = colsrs.getString("TYPE_NAME");
+                if (actualColTypeName.equals("timestamp")) {
+                    return;
+                } else {
+                    throw new InvalidTabOrColException(INVALID_COL_TYPE);
+                }
+            } else {
+                throw new InvalidTabOrColException(NOT_FOUND_MSG);
+            }
+        } catch (SQLException e) {
+            final var msg = String.format(SQL_ERR_MSG, e.getMessage());
+            log.error(msg);
+            throw new CustomSQLException(msg);
+        }
     }
 
 }
