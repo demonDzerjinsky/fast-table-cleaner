@@ -38,27 +38,33 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
             final String tableName,
             final String colName,
             final LocalDateTime dateFrom) {
+        final String tabPostfix = "__fastlib";
+        final String tempTableName = tableName + tabPostfix;
         checkColFomat(tableName, colName);
-        renameTab(tableName); // меняем имя таблицы на временное
-        // флажок определяет была или нет ошибка в процессе компенсации
-        boolean reverseErr = false;
+        renameTab(tableName, tempTableName); // меняем имя таблицы на временное
+        boolean needRemoveRenamed = false;
         try {
-            // переносим в таблицу с исходным имененм только нужные данные.
-            // остальная история останется
-            // в переименованной таблице и в последствии удалится без транзакции
-            // вместе с таблицей.
-            createTabAsSelect(tableName);
+            // переносим в таблицу с исходным именем только нужные данные.
+            // остальная история останется в переименованной таблице и
+            // в последствии удалится без транзакции вместе с таблицей.
+            createTabAsSelect(tableName, tempTableName);
+            needRemoveRenamed = true;
         } catch (Exception e) {
             // компенсирующее действие если чтото не так
             // возвращаем таблицу со старыми данными
             log.error("{}", e);
             try {
-                renameTabReverse(tableName);
+                renameTab(tempTableName, tableName);
+                needRemoveRenamed = true;
             } catch (Exception ee) {
+                log.error("{}", e);
+                throw e;
             }
             throw e;
         } finally {
-            removeRenamedTab(tableName);
+            if (needRemoveRenamed) {
+                removeRenamedTab(tempTableName);
+            }
         }
     }
 
@@ -68,10 +74,13 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
     private void renameTabReverse(final String tabName) {
     }
 
-    private void renameTab(final String tabName) {
+    private void renameTab(final String srcName, final String dstName) {
+
     }
 
-    private void createTabAsSelect(final String tabName) {
+    private void createTabAsSelect(
+            final String createTable,
+            final String srcTable) {
 
     }
 

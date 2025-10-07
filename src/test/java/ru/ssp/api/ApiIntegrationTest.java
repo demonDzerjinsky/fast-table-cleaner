@@ -32,6 +32,7 @@ public class ApiIntegrationTest {
     private final static String pass = getPty("db.password");
     private final static Integer pool = valueOf(getPty("db.poolsize"));
     private final static String dbname = "testdb";
+    private final static String tab_postfix = "__fastlib";
     private static HikariDataSource dataSource;
 
     @Container
@@ -78,9 +79,31 @@ public class ApiIntegrationTest {
 
     @Test
     void main() {
+        final String table = "test_table";
         createTable();
-        checkTableMeta("test_table");
+        checkTableMeta(table);
+        // fillTable(table);
+        renameTable(table);
+        checkTableMeta(table + tab_postfix);
         assertTrue(true);
+    }
+
+    private void fillTable(String table) {
+        fail();
+        try (var connection = dataSource.getConnection(); var stmt = connection.createStatement()) {
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void renameTable(String table) {
+        final String renameFormat = "alter table %s rename to %s%s";
+        try (var connection = dataSource.getConnection(); var stmt = connection.createStatement()) {
+            boolean result = stmt.execute(String.format(renameFormat, table, table, tab_postfix));
+            assertFalse(result);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     void createTable() {
@@ -132,7 +155,7 @@ public class ApiIntegrationTest {
                     }
                 }
             }
-            var cds = meta.getColumns(connection.getCatalog(), connection.getSchema(),table,
+            var cds = meta.getColumns(connection.getCatalog(), connection.getSchema(), table,
                     "event_timestamp");
             if (cds.next()) {
                 var actualColTypeName = cds.getString("TYPE_NAME");
