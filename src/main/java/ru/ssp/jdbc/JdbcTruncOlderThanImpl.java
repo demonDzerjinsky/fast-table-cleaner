@@ -66,12 +66,21 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
             throw e;
         } finally {
             if (needRemoveRenamed) {
-                removeRenamedTab(tempTableName);
+                dropTable(tempTableName);
             }
         }
     }
 
-    private void removeRenamedTab(final String tabName) {
+    private void dropTable(final String tabName) {
+        // sql injection не боимся, все таблицы проверены на метаданных ранее
+        final String template = "DROP TABLE %s";
+        final String queryString = format(template, tabName);
+        try (var connection = getConnection();
+                var stmt = connection.createStatement()) {
+            stmt.execute(queryString);
+        } catch (SQLException e) {
+            throw new CustomSQLException(e);
+        }
     }
 
     private void renameTab(final String srcName, final String dstName) {
