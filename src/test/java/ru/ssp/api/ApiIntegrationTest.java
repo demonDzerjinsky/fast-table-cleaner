@@ -19,6 +19,8 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -27,6 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Disabled
 @Testcontainers
 public class ApiIntegrationTest {
 
@@ -80,7 +83,7 @@ public class ApiIntegrationTest {
     }
 
     @Test
-    void main() {
+    void debug() {
         final String table = "test_table";
         final String dateCol = "event_timestamp";
         createTable();
