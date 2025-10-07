@@ -90,7 +90,19 @@ public class ApiIntegrationTest {
         checkTableMeta(table + tab_postfix);
         createTableAsSelect(table, table + tab_postfix, dateCol, LocalDateTime.now());
         checkTableMeta(table);
+        dropTable(table + tab_postfix);
         assertTrue(true);
+    }
+
+    private void dropTable(String tab) {
+        final String template = "drop table %s";
+        final String queryString = String.format(template, tab);
+        try (var connection = dataSource.getConnection(); var stmt = connection.createStatement()) {
+            var result = stmt.execute(queryString);
+            assertFalse(result);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void createTableAsSelect(String table, String tableSrc, String col, LocalDateTime dateTime) {
