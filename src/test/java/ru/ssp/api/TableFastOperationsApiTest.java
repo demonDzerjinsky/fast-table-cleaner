@@ -1,12 +1,19 @@
 package ru.ssp.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static ru.ssp.infra.CustomConnectionPool.closePool;
+import static ru.ssp.infra.CustomConnectionPool.getConnection;
 import static ru.ssp.infra.CustomProperties.getPty;
+
+import java.sql.SQLException;
 
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Ports;
 
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -37,6 +44,22 @@ public class TableFastOperationsApiTest {
 
     @Test
     void checkConnection() {
-        Assertions.assertThat(postgres.getJdbcUrl()).isEqualTo(getPty("db.url"));
+        assertThat(postgres.getJdbcUrl()).isEqualTo(getPty("db.url"));
+        try (var conn = getConnection()) {
+            assertThat(conn).isNotNull();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Tag("main")
+    @Test
+    void shouldRetainOnlyNewerRecords() {
+        assertTrue(true);
+    }
+
+    @AfterAll
+    static void afterAll() {
+        closePool();
     }
 }

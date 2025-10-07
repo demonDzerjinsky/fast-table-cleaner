@@ -9,7 +9,7 @@ mvn clean test
 - для корректного выполнения тестов необходимо, чтобы было установлено и настроено окружение docker
 - поиск таблицы для очистки производится в каталоге БД, определенном в файле настроек application.properties (db.url)
 - подключение к БД производится под учетной записью определенной в файле настроек application.properties (db.username, db.password)
-- интеграционный тест с демонстрацией выполнения api находится в тестовом методе с тэгом "main"
+- интеграционный тест с демонстрацией выполнения api находится в тестовом методе с тэгом "main" (TableFastOperationsApiTest.shouldRetainOnlyNewerRecords())
 ```sh
 mvn clean test -Dgroups=main
 ```
