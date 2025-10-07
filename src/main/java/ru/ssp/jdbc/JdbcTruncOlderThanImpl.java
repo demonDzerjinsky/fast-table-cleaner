@@ -38,14 +38,41 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
             final String tableName,
             final String colName,
             final LocalDateTime dateFrom) {
-        try (var connection = CustomConnectionPool.getConnection()) {
-            // TODO
-            log.info("nop");
-        } catch (SQLException e) {
-            final var msg = String.format(SQL_ERR_MSG, e.getMessage());
-            log.error(msg);
-            throw new CustomSQLException(msg);
+        checkColFomat(tableName, colName);
+        renameTab(tableName); // меняем имя таблицы на временное
+        // флажок определяет была или нет ошибка в процессе компенсации
+        boolean reverseErr = false;
+        try {
+            // переносим в таблицу с исходным имененм только нужные данные.
+            // остальная история останется
+            // в переименованной таблице и в последствии удалится без транзакции
+            // вместе с таблицей.
+            createTabAsSelect(tableName);
+        } catch (Exception e) {
+            // компенсирующее действие если чтото не так
+            // возвращаем таблицу со старыми данными
+            log.error("{}", e);
+            try {
+                renameTabReverse(tableName);
+            } catch (Exception ee) {
+            }
+            throw e;
+        } finally {
+            removeRenamedTab(tableName);
         }
+    }
+
+    private void removeRenamedTab(final String tabName) {
+    }
+
+    private void renameTabReverse(final String tabName) {
+    }
+
+    private void renameTab(final String tabName) {
+    }
+
+    private void createTabAsSelect(final String tabName) {
+
     }
 
     /**
