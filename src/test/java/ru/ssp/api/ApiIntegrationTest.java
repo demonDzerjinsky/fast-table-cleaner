@@ -79,7 +79,7 @@ public class ApiIntegrationTest {
     @Test
     void main() {
         createTable();
-        checkTableMeta();
+        checkTableMeta("test_table");
         assertTrue(true);
     }
 
@@ -97,7 +97,7 @@ public class ApiIntegrationTest {
         }
     }
 
-    void checkTableMeta() {
+    void checkTableMeta(final String table) {
         try (var connection = dataSource.getConnection()) {
             var meta = connection.getMetaData();
             var cts = meta.getCatalogs();
@@ -116,7 +116,7 @@ public class ApiIntegrationTest {
                                 var tabName = tbs.getString("TABLE_NAME");
                                 out.print("\t\t");
                                 out.println(tabName);
-                                if (tabName.equals("test_table")) {
+                                if (tabName.equals(table)) {
                                     var cls = meta.getColumns(catName, schemName, tabName, null);
                                     while (cls.next()) {
                                         var colName = cls.getString("COLUMN_NAME");
@@ -132,7 +132,7 @@ public class ApiIntegrationTest {
                     }
                 }
             }
-            var cds = meta.getColumns(connection.getCatalog(), connection.getSchema(), "test_table",
+            var cds = meta.getColumns(connection.getCatalog(), connection.getSchema(),table,
                     "event_timestamp");
             if (cds.next()) {
                 var actualColTypeName = cds.getString("TYPE_NAME");
