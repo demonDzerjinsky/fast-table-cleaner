@@ -1,5 +1,8 @@
 package ru.ssp.jdbc;
 
+import static java.lang.String.format;
+import static ru.ssp.infra.CustomConnectionPool.getConnection;
+
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
@@ -7,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import ru.ssp.exceptions.CustomSQLException;
 import ru.ssp.exceptions.InvalidTabOrColException;
 import ru.ssp.impl.TruncOlderThanExecr;
-import ru.ssp.infra.CustomConnectionPool;
 
 /**
  * очищает данные в таблице в соответствии с постановкой
@@ -75,6 +77,14 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
     }
 
     private void renameTab(final String srcName, final String dstName) {
+        // sql injection не боимся, все таблицы проверены на метаданных ранее
+        final String template = "ALTER TABLE %s RENAME TO %s";
+        try (var connection = getConnection();
+                var stmt = connection.createStatement()) {
+            boolean result = stmt.execute(format(template, srcName, dstName));
+        } catch (SQLException e) {
+            throw new CustomSQLException(e);
+        }
 
     }
 
@@ -95,7 +105,7 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
     private void checkColFomat(
             final String tableName,
             final String colName) {
-        try (var connection = CustomConnectionPool.getConnection()) {
+        try (var connection = getConnection()) {
             var meta = connection.getMetaData();
             var colsrs = meta.getColumns(connection.getCatalog(),
                     connection.getSchema(),
