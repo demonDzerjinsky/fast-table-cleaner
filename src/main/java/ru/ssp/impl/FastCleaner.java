@@ -2,7 +2,6 @@ package ru.ssp.impl;
 
 import static ru.ssp.dto.TruncOlderThanResponse.Status.FAIL;
 import static ru.ssp.dto.TruncOlderThanResponse.Status.OK;
-import static ru.ssp.infra.CustomConnectionPool.closePool;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.ssp.dto.TruncOlderThanRequest;
@@ -80,9 +79,11 @@ public final class FastCleaner {
                     } catch (Exception e) {
                         log.error(STATUS_FAIL_MESSAGE, e);
                         return new TruncOlderThanResponse(FAIL, e.getMessage());
-                    } finally {
-                        closePool();
                     }
+                    // finally {
+                    // closePool(); в реал исп пул будет приходить от
+                    // сервиса и ответств закрытия не здесь
+                    // }
                 });
     }
 }

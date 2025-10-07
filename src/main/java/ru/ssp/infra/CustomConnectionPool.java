@@ -57,6 +57,7 @@ public final class CustomConnectionPool {
 
     /**
      * возвращает новое соединение из БД.
+     *
      * @return соединение
      */
     public static Connection getConnection() throws SQLException {

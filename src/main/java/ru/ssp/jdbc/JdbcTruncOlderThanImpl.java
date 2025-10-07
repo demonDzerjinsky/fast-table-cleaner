@@ -101,7 +101,7 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
             final String colName,
             final LocalDateTime dt) {
         // sql injection не боимся, все таблицы проверены на метаданных ранее
-        final String tpl = "CREATE TABLE %s AS SELECT * FROM %s WHERE %s < ?";
+        final String tpl = "CREATE TABLE %s AS SELECT * FROM %s WHERE %s > ?";
         final String query = format(tpl, createTable, srcTable, colName);
         try (var connection = getConnection();
                 var stmt = connection.prepareStatement(query)) {
