@@ -49,17 +49,17 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
             // переносим в таблицу с исходным именем только нужные данные.
             // остальная история останется в переименованной таблице и
             // в последствии удалится без транзакции вместе с таблицей.
-            createTabAsSelect(tableName, tempTableName);
+            createTabAsSelect(tableName, tempTableName, colName, dateFrom);
             needRemoveRenamed = true;
         } catch (Exception e) {
             // компенсирующее действие если чтото не так
             // возвращаем таблицу со старыми данными
-            log.error("{}", e);
+            log.error("error: {}", e);
             try {
                 renameTab(tempTableName, tableName);
                 needRemoveRenamed = true;
             } catch (Exception ee) {
-                log.error("{}", e);
+                log.error("error: {}", e);
                 throw e;
             }
             throw e;
@@ -71,9 +71,6 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
     }
 
     private void removeRenamedTab(final String tabName) {
-    }
-
-    private void renameTabReverse(final String tabName) {
     }
 
     private void renameTab(final String srcName, final String dstName) {
@@ -90,7 +87,9 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
 
     private void createTabAsSelect(
             final String createTable,
-            final String srcTable) {
+            final String srcTable,
+            final String colName,
+            final LocalDateTime dt) {
 
     }
 

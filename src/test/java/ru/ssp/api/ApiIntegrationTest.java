@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static ru.ssp.infra.CustomProperties.getPty;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -80,12 +82,27 @@ public class ApiIntegrationTest {
     @Test
     void main() {
         final String table = "test_table";
+        final String dateCol = "event_timestamp";
         createTable();
         checkTableMeta(table);
         // fillTable(table);
         renameTable(table);
         checkTableMeta(table + tab_postfix);
+        createTableAsSelect(table, table + tab_postfix, dateCol, LocalDateTime.now());
+        checkTableMeta(table);
         assertTrue(true);
+    }
+
+    private void createTableAsSelect(String table, String tableSrc, String col, LocalDateTime dateTime) {
+        final String template = "create table %s as select * from %s where %s < ?";
+        final String queryString = String.format(template, table, tableSrc, col, dateTime);
+        try (var connection = dataSource.getConnection(); var stmt = connection.prepareStatement(queryString)) {
+            stmt.setTimestamp(1, Timestamp.valueOf(dateTime));
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void fillTable(String table) {
