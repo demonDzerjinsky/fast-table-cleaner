@@ -1,6 +1,5 @@
 package ru.ssp.jdbc;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
@@ -41,16 +40,14 @@ public final class JdbcTruncOlderThanImpl implements TruncOlderThanExecr {
      * если не дата то название колонки считаем не корректным.
      * исключение если колонка не существует или она не формата даты
      *
-     * @param connection
      * @param tableName
      * @param colName
      */
     private void checkColFomat(
-            final Connection connection,
             final String tableName,
             final String colName)
             throws SQLException {
-        // TODO
+
     }
 
 }
